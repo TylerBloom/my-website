@@ -1,9 +1,0 @@
-{% extends "blog/base" %}
-
-{% block content %}
-    <ul>
-        {% for p in projs %}
-            <li>{{ p }}</li>
-        {% endfor %}
-    </ul>
-{% endblock content %}

@@ -1,19 +1,16 @@
 
-use rocket_dyn_templates::Template;
-use serde::Serialize;
+use rocket::response::content;
 
 use std::fs;
 
-#[derive(Serialize)]
-struct BlogPosts {
-    posts: Vec<String>,
-}
+use super::utils::{construct_html_from_base, IconGrid};
+
 
 #[get("/")]
-pub fn index() -> Template {
-    let posts = fs::read_dir("site/blog/posts").unwrap().into_iter()
-                .map(|f| {f.unwrap().path().display().to_string()} ).collect();
-    Template::render("blog/index", BlogPosts{ posts: posts } )
+pub fn index() -> content::Html<String> {
+    let posts = IconGrid::load( fs::read_dir("site/blog/posts").unwrap().into_iter()
+                .map(|f| {f.unwrap().path().display().to_string()} ).collect() );
+    content::Html( construct_html_from_base( posts.export_to_grid() ) )
 }
 
 /*

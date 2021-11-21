@@ -3,8 +3,8 @@
 mod statics;
 mod blog;
 mod projects;
+mod utils;
 
-use rocket_dyn_templates::Template;
 use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
 
@@ -24,7 +24,6 @@ fn rocket() -> _ {
         .mount("/static", routes![statics::find])
         .mount("/blog", routes![blog::index])
         .mount("/projects", routes![projects::index])
-        .attach(Template::fairing())
         //.register("/projects", catchers![projects::not_found])
         //.register("/blog", catchers![blog::not_found])
         //.register("/statics", catchers![statics::not_found])
