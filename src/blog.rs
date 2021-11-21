@@ -1,24 +1,19 @@
 
-use rocket::response::Redirect;
-
-use rocket_dyn_templates::Template;//, tera::Tera, context};
+use rocket_dyn_templates::Template;
 use serde::Serialize;
 
 use std::fs;
 
 #[derive(Serialize)]
-struct BlogPost {
+struct BlogPosts {
     posts: Vec<String>,
 }
 
 #[get("/")]
-pub fn index() -> Redirect {
-        let tmp: Template = Template::render("/blog/index", BlogPost{
-                    posts: fs::read_dir("site/blog/posts").unwrap().into_iter()
-                    .map(|f| {f.unwrap().path().display().to_string()} ).collect()
-                    }
-            );
-        Redirect::to(uri!("/blog", tmp))
+pub fn index() -> Template {
+    let posts = fs::read_dir("site/blog/posts").unwrap().into_iter()
+                .map(|f| {f.unwrap().path().display().to_string()} ).collect();
+    Template::render("blog/index", BlogPosts{ posts: posts } )
 }
 
 /*

@@ -2,14 +2,15 @@
 
 mod statics;
 mod blog;
-//mod projects;
+mod projects;
 
-//use rocket_contrib::templates::Template;
+use rocket_dyn_templates::Template;
 use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
 
 #[get("/")]
 async fn root() -> Result<NamedFile, NotFound<String>> {
+    println!("Inside main::root");
     NamedFile::open("site/static/index.html")
         .await
         .map_err(|e| NotFound(e.to_string()))
@@ -20,9 +21,10 @@ async fn root() -> Result<NamedFile, NotFound<String>> {
 fn rocket() -> _ {
     rocket::build()
         .mount("/", routes![root])
-        .mount("/", routes![statics::find])
-        //.mount("/blog", routes![blog::index])
-        //.mount("/projects", routes![projects::index])
+        .mount("/static", routes![statics::find])
+        .mount("/blog", routes![blog::index])
+        .mount("/projects", routes![projects::index])
+        .attach(Template::fairing())
         //.register("/projects", catchers![projects::not_found])
         //.register("/blog", catchers![blog::not_found])
         //.register("/statics", catchers![statics::not_found])
