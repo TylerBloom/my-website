@@ -1,9 +1,12 @@
-#[macro_use] 
-extern crate rocket;
+#[macro_use] extern crate rocket;
 
+mod statics;
+mod blog;
+//mod projects;
+
+//use rocket_contrib::templates::Template;
 use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
-use std::path::PathBuf;
 
 #[get("/")]
 async fn root() -> Result<NamedFile, NotFound<String>> {
@@ -12,15 +15,15 @@ async fn root() -> Result<NamedFile, NotFound<String>> {
         .map_err(|e| NotFound(e.to_string()))
 }
 
-#[get("/<path..>")]
-async fn static_files(path: PathBuf) -> Result<NamedFile, NotFound<String>> {
-    println!( "{:?}", path );
-    let path = PathBuf::from("site").join(path);
-    println!( "{:?}", path );
-    NamedFile::open(path).await.map_err(|e| NotFound(e.to_string()))
-}
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![root, static_files])
+    rocket::build()
+        .mount("/", routes![root])
+        .mount("/", routes![statics::find])
+        //.mount("/blog", routes![blog::index])
+        //.mount("/projects", routes![projects::index])
+        //.register("/projects", catchers![projects::not_found])
+        //.register("/blog", catchers![blog::not_found])
+        //.register("/statics", catchers![statics::not_found])
 }
