@@ -12,9 +12,14 @@ pub struct IconList {
 }
 
 #[derive(Serialize)]
-pub struct IconRows {
-    pub rows: Vec<String>,
+pub struct Page {
+    pub home_color: String,
+    pub bio_color: String,
+    pub project_color: String,
+    pub blog_color: String,
+    pub body: String,
 }
+
 
 impl Icon {
     pub fn load_from_dir(mut dir: PathBuf) -> Option<Self> {
@@ -38,18 +43,34 @@ impl IconList {
         digest
     }
     
-    pub fn export_to_rows(&self, count: usize) -> IconRows {
-        let mut digest = IconRows { rows : Vec::new() };
+    pub fn export_to_html(&self, count: usize) -> String {
+        let grid_start = "<div class=\"w3-row-padding\">";
+        let mut digest = String::from(grid_start);
+        let grid_close = "</div>";
         let mut row = String::new();
         for (i, icon) in self.icons.iter().enumerate() {
             if i != 0 && i % count == 0 {
-                digest.rows.push(row.clone());
+                digest += &(row.clone());
+                digest += grid_close;
+                digest += grid_start;
                 row = String::new();
             }
             row += &icon.html;
         }
-        digest.rows.push(row.clone());
+        digest += &(row.clone());
+        digest += grid_close;
         digest
     }
 }
 
+impl Page {
+    pub fn new() -> Self {
+        Page {
+            home_color: String::from("w3-hover-black"),
+            bio_color: String::from("w3-hover-black"),
+            project_color: String::from("w3-hover-black"),
+            blog_color: String::from("w3-hover-black"),
+            body: String::new(),
+        }
+    }
+}

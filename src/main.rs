@@ -3,10 +3,12 @@
 mod statics;
 mod blog;
 mod projects;
+mod bio;
 mod utils;
 
 use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
+use rocket_dyn_templates::Template;//, tera::Tera, context};
 
 #[get("/")]
 async fn root() -> Result<NamedFile, NotFound<String>> {
@@ -20,10 +22,12 @@ async fn root() -> Result<NamedFile, NotFound<String>> {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
+        .attach(Template::fairing())
         .mount("/", routes![root])
         .mount("/static", routes![statics::find])
         .mount("/blog", routes![blog::index])
         .mount("/projects", routes![projects::index])
+        .mount("/bio", routes![projects::index])
         //.register("/projects", catchers![projects::not_found])
         //.register("/blog", catchers![blog::not_found])
         //.register("/statics", catchers![statics::not_found])
