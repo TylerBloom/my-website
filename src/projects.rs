@@ -1,14 +1,11 @@
 
-use std::fs;
+use super::utils::IconList;
 
-use super::utils::{IconGrid, construct_html_from_base};
-
-use rocket::response::content;
+use rocket_dyn_templates::Template;//, tera::Tera, context};
 
 #[get("/")]
-pub fn index() -> content::Html<String> {
-    let projects = IconGrid::load( fs::read_dir("site/projects/listings").unwrap().into_iter()
-                .map(|f| {f.unwrap().path().display().to_string()} ).collect() );
-    content::Html( construct_html_from_base(projects.export_to_grid()) )
+pub fn index() -> Template {
+    let icons = IconList::load_from_dir("site/projects/");
+    Template::render("blog/index", icons.export_to_rows(3) )
 }
 
