@@ -1,8 +1,15 @@
+
+use rocket_dyn_templates::tera::Tera;
 use serde::Serialize;
 
 use std::fs;
 use std::path::PathBuf;
 
+pub fn customize_tera(tera: &mut Tera) {
+    tera.autoescape_on(vec![]);
+}
+
+#[derive(Debug)]
 pub struct Icon {
     pub html: String,
 }
@@ -35,8 +42,9 @@ impl IconList {
     pub fn load_from_dir(dir: &str) -> Self {
         let mut digest = IconList { icons: Vec::new()};
         for dir in fs::read_dir(dir).unwrap() {
+            println!( "{:?}", dir );
             match Icon::load_from_dir(dir.unwrap().path()) {
-                Some(icon) => { digest.icons.push(icon); },
+                Some(icon) => { println!("{:?}", icon); digest.icons.push(icon); },
                 None => {},
             }
         }
@@ -48,6 +56,7 @@ impl IconList {
         let mut digest = String::from(grid_start);
         let grid_close = "</div>";
         let mut row = String::new();
+        println!( "{:?}", self.icons );
         for (i, icon) in self.icons.iter().enumerate() {
             if i != 0 && i % count == 0 {
                 digest += &(row.clone());
@@ -55,10 +64,12 @@ impl IconList {
                 digest += grid_start;
                 row = String::new();
             }
+            println!( "{}", icon.html );
             row += &icon.html;
         }
         digest += &(row.clone());
         digest += grid_close;
+        println!( "{}", digest );
         digest
     }
 }

@@ -8,7 +8,7 @@ mod utils;
 
 use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
-use rocket_dyn_templates::Template;//, tera::Tera, context};
+use rocket_dyn_templates::Template; //, context};
 
 #[get("/")]
 async fn root() -> Result<NamedFile, NotFound<String>> {
@@ -22,7 +22,7 @@ async fn root() -> Result<NamedFile, NotFound<String>> {
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .attach(Template::fairing())
+        .attach(Template::custom(|engines| { utils::customize_tera(&mut engines.tera); } ))
         .mount("/", routes![root])
         .mount("/static", routes![statics::find])
         .mount("/blog", routes![blog::index])
