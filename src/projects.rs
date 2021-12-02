@@ -4,6 +4,15 @@ use super::utils::{IconList, Page};
 use rocket_dyn_templates::Template;
 
 
+#[get("/listings/<path>/about.html")]
+pub async fn info(path: String) -> Template {
+    println!( "{:?}", path );
+    let mut page = Page::new(&format!("site/projects/listings/{}/about.html", path));
+    page.project_color = String::from("w3-black");
+    Template::render("base", page )
+}
+
+
 #[get("/")]
 pub fn root() -> Template {
     let mut page = Page::new("site/projects/index.html");

@@ -13,7 +13,6 @@ use std::path::PathBuf;
 
 #[get("/<path..>")]
 pub async fn file(path: PathBuf) -> Option<NamedFile> {
-    println!("Looking for a file: {:?}", path);
     NamedFile::open(path).await.ok()
 }
 
@@ -30,7 +29,7 @@ fn rocket() -> _ {
         .mount("/", routes![root, file])
         .mount("/home/", routes![home::root])
         .mount("/bio/", routes![bio::root])
-        .mount("/projects/", routes![projects::root])
+        .mount("/projects/", routes![projects::root, projects::info])
         .mount("/blog/", routes![blog::root])
         //.register("/projects", catchers![projects::not_found])
         //.register("/blog", catchers![blog::not_found])
