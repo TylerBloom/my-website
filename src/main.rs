@@ -11,7 +11,7 @@ use rocket_dyn_templates::Template;
 
 use std::path::PathBuf;
 
-#[rocket::get("/<path..>")]
+#[get("/<path..>")]
 pub async fn file(path: PathBuf) -> Option<NamedFile> {
     println!("Looking for a file: {:?}", path);
     NamedFile::open(path).await.ok()
@@ -27,7 +27,7 @@ async fn root() -> Template {
 fn rocket() -> _ {
     rocket::build()
         .attach(Template::custom(|engines| { utils::customize_tera(&mut engines.tera); } ))
-        .mount("/", routes![root])
+        .mount("/", routes![root, file])
         .mount("/home/", routes![home::root])
         .mount("/bio/", routes![bio::root])
         .mount("/projects/", routes![projects::root])
