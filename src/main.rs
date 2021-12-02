@@ -1,21 +1,25 @@
 #[macro_use] extern crate rocket;
 
-mod statics;
-mod blog;
-mod projects;
+mod home;
 mod bio;
+mod projects;
+mod blog;
 mod utils;
 
-use rocket::response::status::NotFound;
 use rocket::fs::NamedFile;
-use rocket_dyn_templates::Template; //, context};
+use rocket_dyn_templates::Template;
+
+use std::path::PathBuf;
+
+#[rocket::get("/<path..>")]
+pub async fn file(path: PathBuf) -> Option<NamedFile> {
+    println!("Looking for a file: {:?}", path);
+    NamedFile::open(path).await.ok()
+}
 
 #[get("/")]
-async fn root() -> Result<NamedFile, NotFound<String>> {
-    println!("Inside main::root");
-    NamedFile::open("site/static/index.html")
-        .await
-        .map_err(|e| NotFound(e.to_string()))
+async fn root() -> Template {
+    home::root()
 }
 
 
@@ -24,10 +28,10 @@ fn rocket() -> _ {
     rocket::build()
         .attach(Template::custom(|engines| { utils::customize_tera(&mut engines.tera); } ))
         .mount("/", routes![root])
-        .mount("/static", routes![statics::find])
-        .mount("/blog", routes![blog::index])
-        .mount("/projects", routes![projects::index])
-        .mount("/bio", routes![projects::index])
+        .mount("/home/", routes![home::root])
+        .mount("/bio/", routes![bio::root])
+        .mount("/projects/", routes![projects::root])
+        .mount("/blog/", routes![blog::root])
         //.register("/projects", catchers![projects::not_found])
         //.register("/blog", catchers![blog::not_found])
         //.register("/statics", catchers![statics::not_found])

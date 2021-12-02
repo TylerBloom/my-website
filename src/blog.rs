@@ -1,14 +1,15 @@
 
 use super::utils::{IconList, Page};
 
-use rocket_dyn_templates::Template;//, tera::Tera, context};
+use rocket_dyn_templates::Template;
+
 
 #[get("/")]
-pub fn index() -> Template {
-    let mut page = Page::new();
+pub fn root() -> Template {
+    let mut page = Page::new("site/blog/index.html");
     page.blog_color = String::from("w3-black");
     let icons = IconList::load_from_dir("site/blog/posts/");
     page.body = icons.export_to_html(3);
-    Template::render("index", page )
+    Template::render("base", page )
 }
 
