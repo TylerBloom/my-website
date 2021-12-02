@@ -9,13 +9,32 @@ pub fn customize_tera(tera: &mut Tera) {
     tera.autoescape_on(vec![]);
 }
 
+pub trait Icon
+where Self: Sized {
+    fn load_from_dir(dir: PathBuf) -> Option<Self>;
+    fn get_html(&self) -> String;
+}
+
+
+/*
 #[derive(Debug)]
 pub struct Icon {
     pub html: String,
 }
+impl Icon {
+    pub fn load_from_dir(mut dir: PathBuf) -> Option<Self> {
+        dir.push("icon.html");
+        match fs::read_to_string(dir.as_path().to_str().unwrap()) {
+            Ok(content) => Some(Icon { html : content }),
+            _ => None
+        }
+    }
+}
+*/
 
-pub struct IconList {
-    pub icons: Vec<Icon>
+pub struct IconList<I>
+where I: Icon {
+    pub icons: Vec<I>
 }
 
 #[derive(Serialize)]
@@ -27,22 +46,12 @@ pub struct Page {
     pub body: String,
 }
 
-
-impl Icon {
-    pub fn load_from_dir(mut dir: PathBuf) -> Option<Self> {
-        dir.push("icon.html");
-        match fs::read_to_string(dir.as_path().to_str().unwrap()) {
-            Ok(content) => Some(Icon { html : content }),
-            _ => None
-        }
-    }
-}
-
-impl IconList {
+impl<I> IconList<I>
+where I: Icon {
     pub fn load_from_dir(dir: &str) -> Self {
         let mut digest = IconList { icons: Vec::new()};
         for dir in fs::read_dir(dir).unwrap() {
-            match Icon::load_from_dir(dir.unwrap().path()) {
+            match I::load_from_dir(dir.unwrap().path()) {
                 Some(icon) => { digest.icons.push(icon); },
                 None => {},
             }
@@ -62,7 +71,7 @@ impl IconList {
                 digest += grid_start;
                 row = String::new();
             }
-            row += &icon.html;
+            row += &icon.get_html();
         }
         digest += &(row.clone());
         digest += grid_close;
