@@ -1,4 +1,3 @@
-
 use super::utils::Page;
 
 use rocket_dyn_templates::Template;
@@ -7,6 +6,5 @@ use rocket_dyn_templates::Template;
 pub fn root() -> Template {
     let mut page = Page::new("site/home/index.html");
     page.home_color = String::from("w3-black");
-    Template::render("base", page )
+    Template::render("base", page)
 }
-

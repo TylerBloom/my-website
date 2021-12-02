@@ -1,9 +1,10 @@
-#[macro_use] extern crate rocket;
+#[macro_use]
+extern crate rocket;
 
-mod home;
 mod bio;
-mod projects;
 mod blog;
+mod home;
+mod projects;
 mod utils;
 
 use rocket::fs::NamedFile;
@@ -21,17 +22,18 @@ async fn root() -> Template {
     home::root()
 }
 
-
 #[launch]
 fn rocket() -> _ {
     rocket::build()
-        .attach(Template::custom(|engines| { utils::customize_tera(&mut engines.tera); } ))
+        .attach(Template::custom(|engines| {
+            utils::customize_tera(&mut engines.tera);
+        }))
         .mount("/", routes![root, file])
         .mount("/home/", routes![home::root])
         .mount("/bio/", routes![bio::root])
         .mount("/projects/", routes![projects::root, projects::about])
         .mount("/blog/", routes![blog::root, blog::get_post])
-        //.register("/projects", catchers![projects::not_found])
-        //.register("/blog", catchers![blog::not_found])
-        //.register("/statics", catchers![statics::not_found])
+    //.register("/projects", catchers![projects::not_found])
+    //.register("/blog", catchers![blog::not_found])
+    //.register("/statics", catchers![statics::not_found])
 }

@@ -1,4 +1,3 @@
-
 use rocket_dyn_templates::tera::Tera;
 use serde::Serialize;
 
@@ -10,31 +9,18 @@ pub fn customize_tera(tera: &mut Tera) {
 }
 
 pub trait Icon
-where Self: Sized {
+where
+    Self: Sized,
+{
     fn load_from_dir(dir: PathBuf) -> Option<Self>;
     fn get_html(&self) -> String;
 }
 
-
-/*
-#[derive(Debug)]
-pub struct Icon {
-    pub html: String,
-}
-impl Icon {
-    pub fn load_from_dir(mut dir: PathBuf) -> Option<Self> {
-        dir.push("icon.html");
-        match fs::read_to_string(dir.as_path().to_str().unwrap()) {
-            Ok(content) => Some(Icon { html : content }),
-            _ => None
-        }
-    }
-}
-*/
-
 pub struct IconList<I>
-where I: Icon {
-    pub icons: Vec<I>
+where
+    I: Icon,
+{
+    pub icons: Vec<I>,
 }
 
 #[derive(Serialize)]
@@ -47,18 +33,22 @@ pub struct Page {
 }
 
 impl<I> IconList<I>
-where I: Icon {
+where
+    I: Icon,
+{
     pub fn load_from_dir(dir: &str) -> Self {
-        let mut digest = IconList { icons: Vec::new()};
+        let mut digest = IconList { icons: Vec::new() };
         for dir in fs::read_dir(dir).unwrap() {
             match I::load_from_dir(dir.unwrap().path()) {
-                Some(icon) => { digest.icons.push(icon); },
-                None => {},
+                Some(icon) => {
+                    digest.icons.push(icon);
+                }
+                None => {}
             }
         }
         digest
     }
-    
+
     pub fn export_to_html(&self, count: usize) -> String {
         let grid_start = "<div class=\"w3-row-padding\">";
         let mut digest = String::from(grid_start);
@@ -83,8 +73,10 @@ impl Page {
     pub fn new(index: &str) -> Self {
         let mut body = String::new();
         match fs::read_to_string(index) {
-            Ok(content) => { body = String::from(content); } ,
-            _ => { },
+            Ok(content) => {
+                body = String::from(content);
+            }
+            _ => {}
         }
         Page {
             home_color: String::from("w3-hover-black"),
